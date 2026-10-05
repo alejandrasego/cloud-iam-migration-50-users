@@ -1,6 +1,6 @@
 # Cloud IAM Migration Plan: 50 Local Accounts
 
-**Author:** [Your name], Project Administrator
+**Author:** Alejandra Segoviano, Project Administrator
 **Status:** Draft v1.0
 **Target platform:** AWS (IAM Identity Center + IAM)
 **Source data:** [`data/users-sample.csv`](../data/users-sample.csv) (fictional)
