@@ -1,0 +1,51 @@
+username,full_name,department,job_title,manager,local_groups,privileged,account_type,contract_end,mfa_enabled,notes
+jlopez,Julia Lopez,Finance,Finance Manager,,Domain-Users;Finance-Local;FileShare-Finance,N,employee,,N,
+asmith,Aaron Smith,Finance,Accountant,jlopez,Domain-Users;Finance-Local,N,employee,,N,
+bjohnson,Brenda Johnson,Finance,Accounts Payable Clerk,jlopez,Domain-Users;Finance-Local,N,employee,,N,
+cmartinez,Carlos Martinez,Finance,Financial Analyst,jlopez,Domain-Users;Finance-Local,N,employee,,N,
+dkim,Dana Kim,Finance,Payroll Specialist,jlopez,Domain-Users;Finance-Local;Payroll-Access,N,employee,,N,Access to sensitive payroll data
+evargas,Elena Vargas,Finance,Accounts Receivable Clerk,jlopez,Domain-Users;Finance-Local,N,employee,,N,
+fobrien,Frank OBrien,Finance,Senior Accountant,jlopez,Domain-Users;Finance-Local,N,employee,,N,
+gnakamura,Grace Nakamura,Finance,Budget Analyst,jlopez,Domain-Users;Finance-Local,N,employee,,N,
+hrossi,Hector Rossi,Finance,Auditor,jlopez,Domain-Users;Finance-Local;Audit-ReadOnly,N,employee,,N,
+svc-payroll,Payroll Service Account,Finance,Service Account,dkim,Service-Accounts;Payroll-Access,N,service,,N,No interactive login should be allowed
+mchen,Michelle Chen,HR,HR Manager,,Domain-Users;HR-Local;HR-Records,N,employee,,N,
+nfoster,Nathan Foster,HR,HR Generalist,mchen,Domain-Users;HR-Local;HR-Records,N,employee,,N,
+oadams,Olivia Adams,HR,Recruiter,mchen,Domain-Users;HR-Local,N,employee,,N,
+pwright,Paul Wright,HR,Benefits Coordinator,mchen,Domain-Users;HR-Local;HR-Records,N,employee,,N,
+qhughes,Quinn Hughes,HR,HR Assistant,mchen,Domain-Users;HR-Local,N,employee,,N,
+rdiaz,Rosa Diaz,HR,Training Coordinator,mchen,Domain-Users;HR-Local,N,employee,,N,
+dpatel,Dev Patel,IT,IT Manager,,Domain-Users;IT-Admins;Domain-Admins,Y,employee,,N,Uses same account for daily work and admin
+sgarcia,Sofia Garcia,IT,Systems Administrator,dpatel,Domain-Users;IT-Admins;Server-Admins,Y,employee,,N,
+tmoore,Tyler Moore,IT,Network Engineer,dpatel,Domain-Users;IT-Admins;Network-Admins,Y,employee,,N,
+ulee,Uma Lee,IT,Help Desk Technician,dpatel,Domain-Users;IT-HelpDesk,N,employee,,N,Can reset passwords
+vclark,Victor Clark,IT,Help Desk Technician,dpatel,Domain-Users;IT-HelpDesk,N,employee,,N,Can reset passwords
+wlewis,Wendy Lewis,IT,Security Analyst,dpatel,Domain-Users;IT-Security,N,employee,,N,
+xwalker,Xavier Walker,IT,Database Administrator,dpatel,Domain-Users;IT-Admins;DB-Admins,Y,employee,,N,
+ycollins,Yara Collins,IT,Software Developer,dpatel,Domain-Users;IT-Dev,N,employee,,N,
+svc-backup,Backup Service Account,IT,Service Account,sgarcia,Service-Accounts;Backup-Operators,Y,service,,N,Highly privileged service account
+svc-reporting,Reporting Service Account,IT,Service Account,xwalker,Service-Accounts;DB-ReadOnly,N,service,,N,
+kwilliams,Kevin Williams,Sales,Sales Manager,,Domain-Users;Sales-Local;CRM-Admin,N,employee,,N,
+lbaker,Laura Baker,Sales,Account Executive,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+mcooper,Marcus Cooper,Sales,Account Executive,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+nreed,Nina Reed,Sales,Account Executive,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+obailey,Omar Bailey,Sales,Sales Representative,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+pcox,Priya Cox,Sales,Sales Representative,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+qward,Quentin Ward,Sales,Sales Representative,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+rhoward,Rachel Howard,Sales,Sales Operations Analyst,kwilliams,Domain-Users;Sales-Local;CRM-Reports,N,employee,,N,
+sjenkins,Sam Jenkins,Sales,Sales Consultant,kwilliams,Domain-Users;Sales-Local,N,contractor,2026-12-31,N,Access must expire at contract end
+tbrooks,Tara Brooks,Sales,Sales Representative,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+uperry,Umar Perry,Sales,Sales Representative,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+vgray,Vera Gray,Sales,Customer Success Rep,kwilliams,Domain-Users;Sales-Local,N,employee,,N,
+rnguyen,Rita Nguyen,Operations,Operations Manager,,Domain-Users;Ops-Local;FileShare-Ops,N,employee,,N,
+asanders,Adam Sanders,Operations,Logistics Coordinator,rnguyen,Domain-Users;Ops-Local,N,employee,,N,
+bpeterson,Bella Peterson,Operations,Procurement Specialist,rnguyen,Domain-Users;Ops-Local;Procurement,N,employee,,N,
+cramirez,Chris Ramirez,Operations,Warehouse Supervisor,rnguyen,Domain-Users;Ops-Local,N,employee,,N,
+dwatson,Diane Watson,Operations,Project Coordinator,rnguyen,Domain-Users;Ops-Local,N,employee,,N,
+ebennett,Ethan Bennett,Operations,Facilities Coordinator,rnguyen,Domain-Users;Ops-Local,N,employee,,N,
+fcastillo,Fiona Castillo,Operations,Operations Analyst,rnguyen,Domain-Users;Ops-Local,N,employee,,N,
+gflores,Gabe Flores,Operations,Inventory Specialist,rnguyen,Domain-Users;Ops-Local,N,employee,,N,
+hmorgan,Holly Morgan,Operations,Process Consultant,rnguyen,Domain-Users;Ops-Local,N,contractor,2026-11-30,N,Access must expire at contract end
+ibutler,Ian Butler,Operations,Former Logistics Clerk,,Domain-Users;Ops-Local,N,orphaned,,N,Left company 2026-06 but account still active
+jsimmons,Jenna Simmons,Operations,Dispatcher,rnguyen,Domain-Users;Ops-Local,N,employee,,N,
+shared-frontdesk,Front Desk Shared Account,Operations,Shared Account,rnguyen,Domain-Users;Ops-Local,N,shared,,N,Shared password; no individual accountability
