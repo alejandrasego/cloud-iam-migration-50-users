@@ -1,0 +1,52 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowLookupUsers",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetUser",
+        "iam:ListUsers",
+        "iam:ListMFADevices"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowResetOnlyNonPrivilegedUsers",
+      "Effect": "Allow",
+      "Action": [
+        "iam:UpdateLoginProfile",
+        "iam:DeactivateMFADevice",
+        "iam:ResyncMFADevice"
+      ],
+      "Resource": "arn:aws:iam::123456789012:user/*",
+      "Condition": {
+        "StringEquals": { "aws:ResourceTag/privileged": "false" }
+      }
+    },
+    {
+      "Sid": "DenyAnyActionOnPrivilegedUsers",
+      "Effect": "Deny",
+      "Action": [
+        "iam:UpdateLoginProfile",
+        "iam:DeactivateMFADevice",
+        "iam:ResyncMFADevice",
+        "iam:CreateAccessKey",
+        "iam:DeleteUser"
+      ],
+      "Resource": "arn:aws:iam::123456789012:user/*",
+      "Condition": {
+        "StringEquals": { "aws:ResourceTag/privileged": "true" }
+      }
+    },
+    {
+      "Sid": "DenyTagTampering",
+      "Effect": "Deny",
+      "Action": [
+        "iam:TagUser",
+        "iam:UntagUser"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
