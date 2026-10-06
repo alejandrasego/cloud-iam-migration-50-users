@@ -14,7 +14,7 @@ Design for the 50-user migration to AWS IAM Identity Center. Source inventory: [
 
 | Group | Purpose | Members (from inventory) |
 |---|---|---|
-| `grp-all-staff` | Baseline: self-service MFA and password only | All human users (46 incl. contractors; excludes 3 service accounts, shared and orphaned accounts) |
+| `grp-all-staff` | Baseline: self-service MFA and password only | All human identities (49: 45 people plus 4 admin identities) |
 | `grp-finance-users` | Finance department data | jlopez, asmith, bjohnson, cmartinez, dkim, evargas, fobrien, gnakamura |
 | `grp-finance-payroll` | Payroll data (sensitive) | dkim |
 | `grp-finance-audit` | Read-only audit access to finance data | hrossi |
