@@ -1,0 +1,55 @@
+source_username,new_identity,department_tag,privileged_tag,groups,action,notes
+jlopez,jlopez,Finance,false,grp-all-staff;grp-finance-users,migrate,
+asmith,asmith,Finance,false,grp-all-staff;grp-finance-users,migrate,
+bjohnson,bjohnson,Finance,false,grp-all-staff;grp-finance-users,migrate,
+cmartinez,cmartinez,Finance,false,grp-all-staff;grp-finance-users,migrate,
+dkim,dkim,Finance,false,grp-all-staff;grp-finance-users;grp-finance-payroll,migrate,Sensitive payroll access
+evargas,evargas,Finance,false,grp-all-staff;grp-finance-users,migrate,
+fobrien,fobrien,Finance,false,grp-all-staff;grp-finance-users,migrate,
+gnakamura,gnakamura,Finance,false,grp-all-staff;grp-finance-users,migrate,
+hrossi,hrossi,Finance,false,grp-all-staff;grp-finance-audit,migrate,Auditor is read-only; kept out of finance-users to separate duties
+svc-payroll,role-payroll-service,Finance,n/a,,convert_to_role,Interactive login denied
+mchen,mchen,HR,false,grp-all-staff;grp-hr-users;grp-hr-records,migrate,
+nfoster,nfoster,HR,false,grp-all-staff;grp-hr-users;grp-hr-records,migrate,
+oadams,oadams,HR,false,grp-all-staff;grp-hr-users,migrate,
+pwright,pwright,HR,false,grp-all-staff;grp-hr-users;grp-hr-records,migrate,
+qhughes,qhughes,HR,false,grp-all-staff;grp-hr-users,migrate,
+rdiaz,rdiaz,HR,false,grp-all-staff;grp-hr-users,migrate,
+dpatel,dpatel,IT,true,grp-all-staff,migrate,Daily-use identity with no admin rights
+sgarcia,sgarcia,IT,true,grp-all-staff,migrate,Daily-use identity with no admin rights
+tmoore,tmoore,IT,true,grp-all-staff,migrate,Daily-use identity with no admin rights
+ulee,ulee,IT,false,grp-all-staff;grp-it-helpdesk,migrate,
+vclark,vclark,IT,false,grp-all-staff;grp-it-helpdesk,migrate,
+wlewis,wlewis,IT,false,grp-all-staff;grp-it-security,migrate,
+xwalker,xwalker,IT,true,grp-all-staff,migrate,Daily-use identity with no admin rights
+ycollins,ycollins,IT,false,grp-all-staff;grp-it-developers,migrate,
+svc-backup,role-backup-service,IT,n/a,,convert_to_role,Backup Operators rights replaced with scoped permissions
+svc-reporting,role-reporting-service,IT,n/a,,convert_to_role,Read-only; interactive login denied
+kwilliams,kwilliams,Sales,false,grp-all-staff;grp-sales-users;grp-sales-crm-admin,migrate,
+lbaker,lbaker,Sales,false,grp-all-staff;grp-sales-users,migrate,
+mcooper,mcooper,Sales,false,grp-all-staff;grp-sales-users,migrate,
+nreed,nreed,Sales,false,grp-all-staff;grp-sales-users,migrate,
+obailey,obailey,Sales,false,grp-all-staff;grp-sales-users,migrate,
+pcox,pcox,Sales,false,grp-all-staff;grp-sales-users,migrate,
+qward,qward,Sales,false,grp-all-staff;grp-sales-users,migrate,
+rhoward,rhoward,Sales,false,grp-all-staff;grp-sales-users,migrate,
+sjenkins,sjenkins,Sales,false,grp-all-staff;grp-contractors,migrate,Contract ends 2026-12-31; expiry policy attached
+tbrooks,tbrooks,Sales,false,grp-all-staff;grp-sales-users,migrate,
+uperry,uperry,Sales,false,grp-all-staff;grp-sales-users,migrate,
+vgray,vgray,Sales,false,grp-all-staff;grp-sales-users,migrate,
+rnguyen,rnguyen,Operations,false,grp-all-staff;grp-ops-users,migrate,
+asanders,asanders,Operations,false,grp-all-staff;grp-ops-users,migrate,
+bpeterson,bpeterson,Operations,false,grp-all-staff;grp-ops-users;grp-ops-procurement,migrate,
+cramirez,cramirez,Operations,false,grp-all-staff;grp-ops-users,migrate,
+dwatson,dwatson,Operations,false,grp-all-staff;grp-ops-users,migrate,
+ebennett,ebennett,Operations,false,grp-all-staff;grp-ops-users,migrate,
+fcastillo,fcastillo,Operations,false,grp-all-staff;grp-ops-users,migrate,
+gflores,gflores,Operations,false,grp-all-staff;grp-ops-users,migrate,
+hmorgan,hmorgan,Operations,false,grp-all-staff;grp-contractors,migrate,Contract ends 2026-11-30; expiry policy attached
+ibutler,,Operations,n/a,,disable_then_delete,Orphaned: left 2026-06; review data ownership before deletion
+jsimmons,jsimmons,Operations,false,grp-all-staff;grp-ops-users,migrate,
+shared-frontdesk,,Operations,n/a,,retire,Replace with individual named accounts
+,dpatel-admin,IT,true,grp-all-staff;grp-it-identity-admin,create,New separate admin identity
+,sgarcia-admin,IT,true,grp-all-staff;grp-it-sysadmin,create,New separate admin identity
+,tmoore-admin,IT,true,grp-all-staff;grp-it-network,create,New separate admin identity
+,xwalker-admin,IT,true,grp-all-staff;grp-it-dba,create,New separate admin identity
