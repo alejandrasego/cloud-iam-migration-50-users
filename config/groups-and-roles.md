@@ -6,7 +6,7 @@ Design for the 50-user migration to AWS IAM Identity Center. Source inventory: [
 
 1. **No permissions on individual users.** Users get access only through group membership.
 2. **Groups map to permission sets.** A permission set is the bundle of access a job role needs.
-3. **Department data is separated with tags.** Each S3 bucket carries a `department` tag, and baseline policies only allow access when it matches the user's department (attribute-based access control).
+3. **Department data is separated with tags.** Each S3 object carries a `department` tag, and baseline policies only allow access when it matches the user's department (attribute-based access control).
 4. **Admin access is separate.** Privileged staff get a second identity (`<username>-admin`) used only for admin tasks.
 5. **Every permission set requires MFA** and has a defined session length.
 
