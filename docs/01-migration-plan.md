@@ -64,7 +64,7 @@ Move 50 locally managed user accounts to a centrally managed cloud IAM environme
 | Account type | Count | Migration approach |
 |---|---|---|
 | Employee | 43 | Create user, assign to department group, enroll MFA |
-| of which privileged | 4 | Create standard user plus separate admin role; admin requires MFA and is reviewed quarterly |
+| Of which privileged | 4 | Create standard user plus separate admin role; admin requires MFA and is reviewed quarterly |
 | Contractor | 2 | Create user with access that expires on the `contract_end` date |
 | Service account | 3 | Convert to IAM roles or restricted identities; deny interactive login; rotate credentials |
 | Shared account | 1 | Retire; replace with individual named accounts |
