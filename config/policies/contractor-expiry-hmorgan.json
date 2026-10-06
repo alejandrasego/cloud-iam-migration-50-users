@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyAllAfterContractEnd",
+      "Effect": "Deny",
+      "Action": "*",
+      "Resource": "*",
+      "Condition": {
+        "DateGreaterThan": { "aws:CurrentTime": "2026-12-31T23:59:59Z" }
+      }
+    }
+  ]
+}
