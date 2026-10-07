@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowReadOwnDepartmentStandardData",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::*/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/department": "${aws:PrincipalTag/department}",
+          "s3:ExistingObjectTag/sensitivity": "standard"
+        }
+      }
+    },
+    {
+      "Sid": "AllowWriteOwnDepartmentStandardData",
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::*/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:RequestObjectTag/department": "${aws:PrincipalTag/department}",
+          "s3:RequestObjectTag/sensitivity": "standard"
+        }
+      }
+    },
+    {
+      "Sid": "AllowListBuckets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::*"
+    }
+  ]
+}
