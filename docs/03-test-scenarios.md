@@ -15,7 +15,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 |---|---|---|---|---|
 | 1 | Standard new hire, Finance | asmith | Custom policy simulation | Pass |
 | 2 | HR hire with and without sensitive records access | nfoster, oadams | Simulator | |
-| 3 | New IT admin and self-escalation attempt | sgarcia, sgarcia-admin | Simulator | |
+| 3 | New IT admin and self-escalation attempt | sgarcia, sgarcia-admin | Custom policy simulation | Pass (1 limitation confirmed) |
 | 4 | Contractor before and after contract end | sjenkins | Simulator | |
 | 5 | Department transfer (Sales to Finance) | tbrooks | Walkthrough + Simulator | |
 | 6 | User who has not enrolled MFA | lbaker | Simulator | |
@@ -24,7 +24,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 9 | Terminated employee and orphaned account | rdiaz, ibutler | Walkthrough | |
 | 10 | Shared account retirement | shared-frontdesk | Walkthrough | |
 
-**Totals:** 2 passed (scenario 8 after a fix), 0 failing, 1 failed initially and fixed (scenario 8), 8 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
+**Totals:** 3 passed (scenario 8 after a fix), 0 failing, 1 failed initially and fixed (scenario 8), 7 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
@@ -64,7 +64,23 @@ MFA enforcement is not part of this policy and is tested in scenario 6.
 - `sgarcia-admin` attempting `cloudtrail:StopLogging`: denied
 
 **Actual:**
-**Result:** ☐ Pass ☐ Fail
+
+Daily identity (`sgarcia`, baseline policy only):
+- ec2:StartInstances: implicitDeny (no server rights on the daily account)
+
+Admin identity (`sgarcia-admin`, `it-sysadmin.json` + permission boundary):
+- ec2:StartInstances: allowed
+- iam:AttachUserPolicy: explicitDeny
+- iam:CreateAccessKey: explicitDeny
+- iam:PutUserPermissionsBoundary: explicitDeny
+- cloudtrail:StopLogging: explicitDeny
+
+Stress test: over-broad `Allow *` policy with and without the boundary:
+- Without boundary: iam:AttachUserPolicy and cloudtrail:StopLogging both allowed
+- With boundary: ec2:StartInstances allowed; the four escalation actions explicitDeny
+- With boundary: `sso:CreateAccountAssignment` **allowed**. The IAM boundary does not cover Identity Center (risk R1). Confirmed limitation, not a policy change.
+
+**Result:** ☒ Pass ☐ Fail (1 limitation confirmed)
 
 ## Scenario 4: Contractor before and after contract end
 **User:** `sjenkins` (Sales, contract end 2026-12-31)
