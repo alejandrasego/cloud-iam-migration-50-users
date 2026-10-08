@@ -9,8 +9,9 @@
       ],
       "Resource": "arn:aws:s3:::*/*",
       "Condition": {
-        "StringEquals": {
-          "s3:ExistingObjectTag/department": "${aws:PrincipalTag/department}"
+                "StringEquals": {
+          "s3:ExistingObjectTag/department": "${aws:PrincipalTag/department}",
+          "s3:ExistingObjectTag/sensitivity": "standard"
         }
       }
     },
