@@ -20,12 +20,11 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 5 | Department transfer (Sales to Finance) | tbrooks | Walkthrough + Simulator | |
 | 6 | User who has not enrolled MFA | lbaker | Simulator | |
 | 7 | Service account converted to role | svc-backup | Simulator | |
-| 8 | Help desk password reset: regular vs. admin | ulee | Simulator | |
+| 8 | Help desk password reset: regular vs. admin | ulee | Custom policy simulation | Pass (after fix) |
 | 9 | Terminated employee and orphaned account | rdiaz, ibutler | Walkthrough | |
 | 10 | Shared account retirement | shared-frontdesk | Walkthrough | |
 
-**Totals:** ___ passed, ___ failed, ___ fixed and retested. See [`04-policy-change-log.md`](04-policy-change-log.md) for any policy changes.
-
+**Totals:** 2 passed (scenario 8 after a fix), 0 failing, 1 failed initially and fixed (scenario 8), 8 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
@@ -116,10 +115,25 @@ MFA enforcement is not part of this policy and is tested in scenario 6.
 - Reset password for `dpatel-admin` (tag `privileged=true`): denied
 - Reset password for an untagged user: denied
 - Changing a user's `privileged` tag: denied
-- **Known risk to check:** `permission-boundary.json` denies `iam:UpdateLoginProfile` for everyone. If the boundary is attached to the help desk role, the first expected result may fail. Record exactly what the simulator shows.
+- **Known risk (confirmed):** `permission-boundary.json` denied `iam:UpdateLoginProfile` for everyone, which blocked the help desk's resets. Fixed; see the change log.
 
 **Actual:**
-**Result:** ☐ Pass ☐ Fail
+
+Help desk policy alone:
+- Reset non-privileged user (`lbaker`, `privileged=false`): allowed
+- Reset privileged user (`dpatel-admin`, `privileged=true`): explicitDeny
+- Reset untagged user: implicitDeny
+- Change a user's tag: explicitDeny
+
+Help desk policy + permission boundary, **before the fix**:
+- Reset non-privileged user: **explicitDeny (unexpected, expected allowed)**
+
+Help desk policy + permission boundary, **after the fix** (see [policy change 1](04-policy-change-log.md)):
+- Reset non-privileged user: allowed
+- Reset privileged user: explicitDeny
+- Reset untagged user: explicitDeny
+
+**Result:** ☒ Failed initially, fixed, retested: Pass
 
 ## Scenario 9: Terminated employee and orphaned account
 **Users:** `rdiaz` (terminated during test) and `ibutler` (orphaned: left 2026-06, account still active)
