@@ -24,7 +24,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 9 | Terminated employee and orphaned account | rdiaz, ibutler | Walkthrough | |
 | 10 | Shared account retirement | shared-frontdesk | Walkthrough | |
 
-**Totals:** 3 passed (scenario 8 after a fix), 0 failing, 1 failed initially and fixed (scenario 8), 7 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
+**Totals:** 4 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 6 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
