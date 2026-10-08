@@ -1,7 +1,9 @@
 # Write-up: Cloud IAM Migration (50 Accounts)
 
 ## Failure cases
-(Fill in after testing. Link each to a scenario in `03-test-scenarios.md` and a change in `04-policy-change-log.md`.)
+**1. Permission boundary blocked the help desk (scenario 8, policy change 1).** Two policies that each passed testing on their own conflicted when combined: the boundary's blanket deny on password resets blocked the help desk's legitimate resets. Found by testing the help desk policy with and without the boundary, fixed with a conditional deny, and retested (see [`04-policy-change-log.md`](04-policy-change-log.md)). Lesson: test policies in combination, not only individually.
+
+**2. Account-level guardrail masked the policy results (testing environment).** Initial tests against the live test account returned `explicitDeny` for every S3 action regardless of tags. The simulator showed no matching statement in any attached policy and `AllowedByOrganizations: false`, which pointed to an account-level guardrail rather than a flaw in the policy. Testing was redone with `simulate-custom-policy`, which evaluates the policy logic in isolation.
 
 ## Remaining security limitations
 - MFA is enforced at the Identity Center layer; the IAM policy is a backstop for non-federated paths.
@@ -12,6 +14,7 @@
 - S3 cannot filter `ListBucket` by object tags, so department users can see object names across buckets.
 - The test account is on the AWS free plan, where IAM user groups are unavailable. Test policies were attached directly to test users instead of through groups.
 - Lab work was performed from the account owner's sign-in. A production deployment would use a separate named admin identity.
+- Testing used policy-level simulation (`simulate-custom-policy`) with simulated tag values, not live users and resources, because account-level guardrails blocked S3 and the free plan restricted other features. Results verify policy logic, not end-to-end behavior.
 
 ## Next improvements
 (Fill in at the end. Candidates: SCP for Identity Center assignments, SCIM provisioning from an HR system, quarterly access recertification, SIEM alerting on IAM changes, allow-list boundary design.)
