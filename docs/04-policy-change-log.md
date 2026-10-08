@@ -55,3 +55,78 @@ Removed `iam:UpdateLoginProfile` from the blanket deny and added a conditional d
 - Any permission set that grants `iam:UpdateLoginProfile` can now use it on accounts tagged `privileged=false`. Only the help desk is granted it.
 - Anyone able to edit a user's `privileged` tag could defeat the control. Tag edits are denied in the help desk policy and should be restricted for every other permission set too (open item).
 - Tested with simulated tag values via `simulate-custom-policy`; not verified against live users.
+
+---
+
+## Change 2: Contractor policy allowed reads of restricted data
+
+**Found in:** Scenario 4 (contractor before and after contract end)
+**Date:** 2026-10-08
+**Files changed:** `config/policies/contractor-limited.json`
+**Risk register:** R10
+
+### What failed
+A contractor (`sjenkins`, Sales) could read Sales objects tagged `sensitivity=restricted`.
+
+| Test | Expected | Result |
+|---|---|---|
+| Read Sales/standard object | allowed | allowed |
+| Read Sales/**restricted** object | deny | **allowed (FAIL)** |
+
+### Why it was a problem
+When the `sensitivity=standard` condition was added to `dept-readwrite.json`, `contractor-limited.json` was not updated to match. Employees were blocked from restricted data, but the read-only contractor policy still matched on department alone. A contractor could therefore read data that regular employees in the same department could not.
+
+### Change made
+```diff
+ "StringEquals": {
+-  "s3:ExistingObjectTag/department": "${aws:PrincipalTag/department}"
++  "s3:ExistingObjectTag/department": "${aws:PrincipalTag/department}",
++  "s3:ExistingObjectTag/sensitivity": "standard"
+ }
+```
+
+### Retest
+| Test | Expected | Result |
+|---|---|---|
+| Read Sales/standard object | allowed | allowed |
+| Read Sales/restricted object | deny | implicitDeny |
+
+### Residual risk
+The same rule now lives in two policy files, so they can drift apart again. A shared policy fragment, or an automated check that every policy applies the sensitivity rule, would prevent that (see write-up, next improvements).
+
+---
+
+## Change 3: Wrong expiry date in a contractor's policy file
+
+**Found in:** Scenario 4
+**Date:** 2026-10-08
+**Files changed:** `config/policies/contractor-expiry-hmorgan.json`
+**Risk register:** R11
+
+### What failed
+`hmorgan` (contract end 2026-11-30 per `data/users-sample.csv`) was still allowed on 2026-12-01.
+
+| Test | Expected | Result |
+|---|---|---|
+| hmorgan reads Operations/standard on 2026-12-01 | explicitDeny | **allowed (FAIL)** |
+| sjenkins reads Sales/standard on 2026-12-01 | allowed | allowed |
+
+### Why it was a problem
+The expiry policy logic was correct, but `hmorgan`'s file contained `sjenkins`' contract end date (`2026-12-31`), most likely from copying one file to create the other. His access would have lingered for a month past his contract.
+
+### Change made
+```diff
+-"DateGreaterThan": { "aws:CurrentTime": "2026-12-31T23:59:59Z" }
++"DateGreaterThan": { "aws:CurrentTime": "2026-11-30T23:59:59Z" }
+```
+
+### Retest
+| Test | Expected | Result |
+|---|---|---|
+| hmorgan reads Operations/standard on 2026-12-01 | explicitDeny | explicitDeny |
+| sjenkins reads Sales/standard on 2026-12-01 | allowed | allowed |
+
+The dates in both expiry files were also checked against the inventory CSV and match.
+
+### Residual risk
+Per-contractor hardcoded dates are error-prone, as this change shows. Generating expiry policies from the inventory, or adding a check that compares them to `contract_end`, would remove this class of mistake.
