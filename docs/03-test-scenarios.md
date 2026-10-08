@@ -4,7 +4,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 
 ## How tests were run
 
-- **Tool:** AWS IAM Policy Simulator (free), using test IAM users/roles in a sandbox account with the policies from `config/policies/` attached.
+- **Tool:** AWS CLI `simulate-custom-policy`, run in CloudShell, evaluating each policy from `config/policies/` in isolation. The account-level simulator was unavailable: the account sits under an AWS Organizations guardrail that blocks S3 actions (`AllowedByOrganizations: false`), and the free plan blocks the console simulator. IAM user groups are also unavailable, so test users have policies attached directly.
 - **Context keys:** set manually where needed (`aws:MultiFactorAuthPresent`, `aws:CurrentTime`, resource tags).
 - **Walkthrough tests:** scenarios 5, 9 and 10 depend on process steps (group changes, offboarding), so they are verified by walking through the steps and checking the resulting access.
 - **Data:** all users are fictional, from `data/users-sample.csv`.
@@ -13,7 +13,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 
 | # | Scenario | User(s) | Method | Result |
 |---|---|---|---|---|
-| 1 | Standard new hire, Finance | asmith | Simulator | |
+| 1 | Standard new hire, Finance | asmith | Custom policy simulation | Pass |
 | 2 | HR hire with and without sensitive records access | nfoster, oadams | Simulator | |
 | 3 | New IT admin and self-escalation attempt | sgarcia, sgarcia-admin | Simulator | |
 | 4 | Contractor before and after contract end | sjenkins | Simulator | |
@@ -37,8 +37,15 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 - Any `iam:*` action: denied
 - Any action without MFA: denied
 
-**Actual:**
-**Result:** ☐ Pass ☐ Fail
+**Actual:** Tested `dept-readwrite.json` for a user tagged `department=Finance`, `privileged=false`:
+- Read Finance/standard object: allowed
+- Read HR/standard object: implicitDeny
+- Read Finance/restricted object: implicitDeny
+- Write Finance/standard object: allowed
+- `iam:CreateUser`: implicitDeny
+
+MFA enforcement is not part of this policy and is tested in scenario 6.
+**Result:** ☒ Pass ☐ Fail
 
 ## Scenario 2: HR hire with and without sensitive records access
 **Users:** `nfoster` (in grp-hr-records) and `oadams` (not in grp-hr-records)
