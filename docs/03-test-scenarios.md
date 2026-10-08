@@ -16,7 +16,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 1 | Standard new hire, Finance | asmith | Custom policy simulation | Pass |
 | 2 | HR hire with and without sensitive records access | nfoster, oadams | Simulator | |
 | 3 | New IT admin and self-escalation attempt | sgarcia, sgarcia-admin | Custom policy simulation | Pass (1 limitation confirmed) |
-| 4 | Contractor before and after contract end | sjenkins | Simulator | |
+**Totals:** 4 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 6 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 | 5 | Department transfer (Sales to Finance) | tbrooks | Walkthrough + Simulator | |
 | 6 | User who has not enrolled MFA | lbaker | Simulator | |
 | 7 | Service account converted to role | svc-backup | Simulator | |
@@ -90,8 +90,28 @@ Stress test: over-broad `Allow *` policy with and without the boundary:
 - Read of Finance-tagged objects at any date: denied
 
 **Actual:**
-**Result:** ☐ Pass ☐ Fail
 
+First run (before fixes), `sjenkins` unless noted:
+- 2026-10-15, read Sales/standard: allowed
+- 2026-10-15, write an object: explicitDeny
+- 2026-10-15, read Finance/standard: implicitDeny
+- 2026-10-15, `iam:CreateUser`: explicitDeny
+- 2026-10-15, read Sales/**restricted**: **allowed (unexpected)**
+- 2027-01-05 (after contract end), read Sales/standard: explicitDeny
+- `hmorgan`, 2026-12-01 (after his contract end), read Operations/standard: **allowed (unexpected)**
+- `sjenkins`, 2026-12-01 (still under contract), read Sales/standard: allowed
+
+Two failures, fixed as [policy change 2](04-policy-change-log.md) (restricted data) and policy change 3 (wrong date in `hmorgan`'s expiry file).
+
+Retest after fixes:
+- `sjenkins`, 2026-10-15, read Sales/standard: allowed
+- `sjenkins`, 2026-10-15, read Sales/restricted: implicitDeny
+- `hmorgan`, 2026-12-01, read Operations/standard: explicitDeny
+- `sjenkins`, 2026-12-01, read Sales/standard: allowed
+
+**Result:** ☒ Failed initially (2 issues), fixed, retested: Pass
+
+**Not tested:** sessions already issued before the contract end date remain valid until they expire (up to 4 hours).
 ## Scenario 5: Department transfer (Sales to Finance)
 **User:** `tbrooks` moves from Sales to Finance
 **Steps:** remove from `grp-sales-users`, update `department` tag to Finance, add to `grp-finance-users`.
