@@ -42,19 +42,27 @@
       ],
       "Resource": "*"
     },
-    {
+       {
       "Sid": "DenyCreatingBackdoorCredentials",
       "Effect": "Deny",
       "Action": [
         "iam:CreateUser",
         "iam:CreateAccessKey",
         "iam:CreateLoginProfile",
-        "iam:UpdateLoginProfile",
         "iam:AddUserToGroup",
         "iam:UpdateAssumeRolePolicy"
       ],
       "Resource": "*"
     },
+    {
+      "Sid": "DenyPasswordResetExceptNonPrivilegedTargets",
+      "Effect": "Deny",
+      "Action": "iam:UpdateLoginProfile",
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": { "aws:ResourceTag/privileged": "false" }
+      }
+    },   
     {
       "Sid": "DenyCreatingRolesWithoutBoundary",
       "Effect": "Deny",
