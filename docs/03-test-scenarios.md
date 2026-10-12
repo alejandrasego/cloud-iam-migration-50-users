@@ -21,10 +21,10 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 6 | User who has not enrolled MFA | lbaker | Custom policy simulation | Pass |
 | 7 | Service account converted to role | svc-backup | Simulator | |
 | 8 | Help desk password reset: regular vs. admin | ulee | Custom policy simulation | Pass (after fix) |
-| 9 | Terminated employee and orphaned account | rdiaz, ibutler | Walkthrough | |
-| 10 | Shared account retirement | shared-frontdesk | Walkthrough | |
+| 9 | Terminated employee and orphaned account | rdiaz, ibutler | Policy test + inventory walkthrough | Pass |
+| 10 | Shared account retirement | shared-frontdesk | Inventory walkthrough | Pass (1 open item) |
 
-**Totals:** 7 passed (scenarios 4, 5 and 8 after fixes), 0 failing, 3 failed initially and fixed (scenarios 4, 5 and 8), 3 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
+**Totals:** 9 passed (scenarios 4, 5 and 8 after fixes), 0 failing, 3 failed initially and fixed (scenarios 4, 5 and 8), 1 not yet run (scenario 7). See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
@@ -226,8 +226,21 @@ Help desk policy + permission boundary, **after the fix** (see [policy change 1]
 - Existing sessions end no later than the permission set's session length (8 hours for standard users); record this as a limitation
 - `ibutler` is disabled first, data ownership reviewed, then deleted (per mapping file)
 
-**Actual:**
-**Result:** ☐ Pass ☐ Fail
+**Actual:** policy test plus inventory check (walkthrough; live disabling and deletion were not performed).
+
+Policy test (`rdiaz`, HR, termination at 2026-10-12 15:00 UTC), session issued at 09:00:
+- Without `revoke-sessions.json`: read HR/standard allowed (an old session survives termination)
+- With `revoke-sessions.json` attached: explicitDeny (old session cut off)
+- New session issued at 16:00 with the revocation attached: allowed. By design, new sign-ins are blocked by disabling the identity, not by this policy.
+
+Inventory check:
+- `ibutler`: action `disable_then_delete`, no groups, no new identity (notes: orphaned since 2026-06, review data ownership before deletion)
+
+The session-revocation policy was added after scenario planning showed that sessions issued before termination otherwise last up to 8 hours; termination procedure updated in `config/groups-and-roles.md`.
+
+**Not tested:** live identity disabling, deletion, and revocation in a real account.
+
+**Result:** ☒ Pass ☐ Fail
 
 ## Scenario 10: Shared account retirement
 **Account:** `shared-frontdesk`
@@ -237,9 +250,18 @@ Help desk policy + permission boundary, **after the fix** (see [policy change 1]
 - No identity named `shared-frontdesk` exists after cutover
 - Activity afterward is traceable to named individuals in CloudTrail
 
-**Actual:**
-**Result:** ☐ Pass ☐ Fail
+**Actual:** inventory and policy checks (walkthrough; no live account changes).
 
+- `shared-frontdesk`: action `retire`, no groups, no new identity in `config/user-group-mapping.csv`
+- Identities in the mapping starting with `shared`: 0
+- Policy files mentioning `shared-frontdesk`: none
+- Mapping totals: 50 source accounts accounted for (migrate 45, convert_to_role 3, retire 1, disable_then_delete 1), plus 4 new `-admin` identities
+
+**Open item:** the inventory does not say who used the shared account. Those individuals must be identified from access logs or the front desk team and given named accounts with MFA before cutover.
+
+**Not tested:** that CloudTrail attributes later activity to named individuals.
+
+**Result:** ☒ Pass ☐ Fail (1 open item)
 ---
 
 ## Issues found
