@@ -17,14 +17,14 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 2 | HR hire with and without sensitive records access | nfoster, oadams | Custom policy simulation | Pass |
 | 3 | New IT admin and self-escalation attempt | sgarcia, sgarcia-admin | Custom policy simulation | Pass (1 limitation confirmed) |
 **Totals:** 4 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 6 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
-| 5 | Department transfer (Sales to Finance) | tbrooks | Walkthrough + Simulator | |
+| 5 | Department transfer (Sales to Finance) | tbrooks | Custom policy simulation | Pass (after procedure fix) |
 | 6 | User who has not enrolled MFA | lbaker | Custom policy simulation | Pass |
 | 7 | Service account converted to role | svc-backup | Simulator | |
 | 8 | Help desk password reset: regular vs. admin | ulee | Custom policy simulation | Pass (after fix) |
 | 9 | Terminated employee and orphaned account | rdiaz, ibutler | Walkthrough | |
 | 10 | Shared account retirement | shared-frontdesk | Walkthrough | |
 
-**Totals:** 6 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 4 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
+**Totals:** 7 passed (scenarios 4, 5 and 8 after fixes), 0 failing, 3 failed initially and fixed (scenarios 4, 5 and 8), 3 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
@@ -126,6 +126,7 @@ Retest after fixes:
 **Result:** ☒ Failed initially (2 issues), fixed, retested: Pass
 
 **Not tested:** sessions already issued before the contract end date remain valid until they expire (up to 4 hours).
+
 ## Scenario 5: Department transfer (Sales to Finance)
 **User:** `tbrooks` moves from Sales to Finance
 **Steps:** remove from `grp-sales-users`, update `department` tag to Finance, add to `grp-finance-users`.
@@ -134,8 +135,19 @@ Retest after fixes:
 - No overlap period where both are allowed
 - Watch point: access in this design is driven by both group membership **and** the `department` tag. Check what happens if only one of the two is updated.
 
-**Actual:**
-**Result:** ☐ Pass ☐ Fail
+**Actual:** `tbrooks` modeled with `mfa-enforcement.json` + `dept-readwrite.json`; group membership modeled by policy attachment, tag modeled as a context value.
+
+- Before transfer (tag Sales): read Sales/standard allowed; read Finance/standard implicitDeny
+- Clean transfer (tag Finance): read Finance/standard allowed; read Sales/standard implicitDeny
+- Group changed, tag still Sales: read Finance/standard implicitDeny; **read Sales/standard allowed (unexpected: stale old-department access)**
+- Tag changed, old group left in place: read Sales/standard implicitDeny
+- HR employee transferred to Finance, tag updated, HR-records group left in place: read HR/restricted implicitDeny
+
+Finding: data access follows the tag, so a transfer that updates groups but not the tag leaves old access. Root cause was the documented procedure order. Fixed as [policy change 4](04-policy-change-log.md) (procedure reordered, tag first). Tag-first order verified by the tag-changed cases above.
+
+**Not tested:** existing sessions after a tag change.
+
+**Result:** ☒ Failed initially, procedure fixed, verified: Pass
 
 ## Scenario 6: User who has not enrolled MFA
 **User:** `lbaker`
