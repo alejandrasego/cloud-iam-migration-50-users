@@ -2,6 +2,8 @@
 
 A migration plan, configuration, and test record for moving 50 local user accounts to a cloud IAM environment, built as a project-administration portfolio piece. All users and data are fictional.
 
+This is a design, configuration, and policy-testing project; nothing here is deployed to a live environment.
+
 **Author:** Alejandra Segoviano | **Role targeted:** IT Project Administrator
 
 ## Results at a glance
@@ -10,7 +12,7 @@ A migration plan, configuration, and test record for moving 50 local user accoun
 |---|---|
 | Accounts planned | 50 (45 migrate, 3 become service roles, 1 retired, 1 disabled then deleted) plus 4 new separate admin identities |
 | Test scenarios | **10 of 10 pass** (3 passed only after a fix) |
-| Failures found in testing | 3 scenarios failed initially (4, 5, 8) |
+| Failures found in testing | 4 issues across 3 scenarios (4, 5, 8) |
 | Documented changes | 4 (3 policy fixes, 1 procedure fix), see the [change log](docs/04-policy-change-log.md) |
 | Frameworks referenced | NIST SP 800-53 (AC, AU, IA, PS), NIST SP 800-63B, CIS Controls v8, AWS Well-Architected Security Pillar |
 
@@ -32,7 +34,7 @@ Two policies that each passed testing alone **failed together**: the permission 
 | [`data/users-sample.csv`](data/users-sample.csv) | The fictional inventory |
 
 ## How it was tested
-Policies were evaluated with the AWS CLI's `simulate-custom-policy` in CloudShell, using simulated tag and MFA values. The account-level simulator was unavailable: the free-plan account sits under an AWS Organizations guardrail that blocks S3 actions, so account-level results were meaningless (the write-up explains how that was identified). Scenarios 9 and 10 combine a policy test with an inventory walkthrough. **This verifies policy logic, not behavior against live users and resources.**
+Policies were evaluated with the AWS CLI's `simulate-custom-policy` in CloudShell, using simulated tag and MFA values. The account-level simulator was unusable: for the S3 actions tested it returned `explicitDeny` with no matching policy statement and `AllowedByOrganizations: false`, which points to an account-level restriction rather than a flaw in the policies (the write-up explains how that was identified). Scenario 9 combines a policy test with an inventory check, scenario 10 is an inventory check, and scenario 7's trust policy was reviewed by inspection rather than simulated.**
 
 ## Known limitations (summary)
 - The permission boundary does not cover Identity Center actions (`sso:*`); confirmed in testing.
