@@ -79,6 +79,6 @@ Design for the 50-user migration to AWS IAM Identity Center. Source inventory: [
 
 - **New hire:** user created in Identity Center, added to department group, MFA enrolled at first sign-in.
 - **Transfer:** update the user's `department` tag **first**, because data access follows the tag, not the group. Then remove the old department groups and add the new ones. The tag change alone removes access to the old department's data at the user's next session, even if the group changes are delayed. Never rely on group changes alone.
-- **Termination:** disable immediately, remove group memberships, delete after the retention period.
+- **Termination:** disable the identity immediately (this stops new sign-ins), remove group memberships, attach a session-revocation policy (`config/policies/revoke-sessions.json`, with the termination time filled in) so sessions already issued stop working at once, and deactivate any long-term access keys. Delete the account after the retention period.
 - **Contractor:** access end date set at creation; reviewed 7 days before expiry.
 - **Access review:** managers confirm group membership quarterly.
