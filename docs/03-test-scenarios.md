@@ -18,13 +18,13 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 3 | New IT admin and self-escalation attempt | sgarcia, sgarcia-admin | Custom policy simulation | Pass (1 limitation confirmed) |
 **Totals:** 4 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 6 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 | 5 | Department transfer (Sales to Finance) | tbrooks | Walkthrough + Simulator | |
-| 6 | User who has not enrolled MFA | lbaker | Simulator | |
+| 6 | User who has not enrolled MFA | lbaker | Custom policy simulation | Pass |
 | 7 | Service account converted to role | svc-backup | Simulator | |
 | 8 | Help desk password reset: regular vs. admin | ulee | Custom policy simulation | Pass (after fix) |
 | 9 | Terminated employee and orphaned account | rdiaz, ibutler | Walkthrough | |
 | 10 | Shared account retirement | shared-frontdesk | Walkthrough | |
 
-**Totals:** 4 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 6 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
+**Totals:** 5 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 5 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
@@ -129,8 +129,28 @@ Retest after fixes:
 - `aws:MultiFactorAuthPresent = false`: MFA setup actions allowed; `s3:GetObject` denied
 - `aws:MultiFactorAuthPresent = true`: normal Sales access allowed
 
-**Actual:**
-**Result:** ☐ Pass ☐ Fail
+**Actual:** `mfa-enforcement.json` + `dept-readwrite.json` for `lbaker` (Sales):
+
+Without MFA (`aws:MultiFactorAuthPresent=false`):
+- Create own virtual MFA device: allowed
+- Enable own MFA device: allowed
+- Read Sales/standard data: explicitDeny
+- Remove own MFA device: explicitDeny
+- `iam:CreateUser`: explicitDeny
+- Remove own MFA device with an over-broad `Allow *` policy also attached: explicitDeny (the MFA deny holds even when another policy grants the action)
+
+MFA context key missing entirely:
+- Read Sales/standard data: explicitDeny (`BoolIfExists` treats a missing key as no MFA)
+
+With MFA (`aws:MultiFactorAuthPresent=true`):
+- Read Sales/standard data: allowed
+- Remove own MFA device: allowed
+
+**Test setup note:** the first run of the "remove own MFA device" cases returned `implicitDeny` for both the no-MFA and MFA cases. The cause was the test, not the policy: `iam:DeactivateMFADevice` is authorized against the user ARN, not the MFA device ARN I had supplied. After correcting the resource, the cases returned `explicitDeny` and `allowed` as expected. No policy change was needed.
+
+**Scope:** this verifies the IAM policy backstop only. MFA enforcement for staff sign-in is configured in Identity Center, which the test account cannot exercise (see limitations in the write-up).
+
+**Result:** ☒ Pass ☐ Fail
 
 ## Scenario 7: Service account converted to role
 **Identity:** `svc-backup` replaced by `role-backup-service`
