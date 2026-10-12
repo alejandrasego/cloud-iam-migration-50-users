@@ -7,6 +7,8 @@
 
 **3. Two inconsistencies in contractor access (scenario 4, policy changes 2 and 3).** The contractor policy still allowed reads of restricted data after the same rule was added to the employee policy, and one contractor's expiry file contained another contractor's end date. Both were found by testing and fixed. Lesson: when a rule changes in one policy, check every policy that should follow it, and don't hand-copy per-person values.
 
+**4. Transfer procedure left old access in place (scenario 5, policy change 4).** Data access in the design follows the `department` tag, but the transfer procedure put group changes first. A transfer that changed groups but not the tag left the user with their old department's data. Found by testing partial transfers, fixed by making the tag the first step. Lesson: identify which attribute actually controls access, and put it first in any procedure that changes it.
+
 ## Remaining security limitations
 - MFA is enforced at the Identity Center layer; the IAM policy is a backstop for non-federated paths.
 - The permission boundary does not cover Identity Center actions (`sso-admin:*`); an identity admin could self-assign broad access. Mitigated by SCP and alerting (not yet implemented).
@@ -22,3 +24,5 @@
 (Fill in at the end. Candidates: SCP for Identity Center assignments, SCIM provisioning from an HR system, quarterly access recertification, SIEM alerting on IAM changes, allow-list boundary design.)
 - Generate contractor expiry policies from the inventory (`contract_end`) and add an automated check that dates match, so a copy-paste error like policy change 3 can't happen.
 - Share the sensitivity rule across policies (or test every permission set against it) so policies can't drift apart, as in policy change 2.
+- Derive the department from the identity source (directory or HR record) as an Identity Center attribute, so one record drives both tags and groups and a transfer cannot be half-finished.
+- Add a periodic report comparing each user's `department` tag to their groups to catch missed transfer steps.
