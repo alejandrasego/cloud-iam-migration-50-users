@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowReadHRRestrictedData",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::*/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/department": "HR",
+          "s3:ExistingObjectTag/sensitivity": "restricted",
+          "aws:PrincipalTag/department": "HR"
+        }
+      }
+    },
+    {
+      "Sid": "AllowWriteHRRestrictedData",
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::*/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:RequestObjectTag/department": "HR",
+          "s3:RequestObjectTag/sensitivity": "restricted",
+          "aws:PrincipalTag/department": "HR"
+        }
+      }
+    }
+  ]
+}
