@@ -78,7 +78,7 @@ Design for the 50-user migration to AWS IAM Identity Center. Source inventory: [
 ## 6. Lifecycle rules
 
 - **New hire:** user created in Identity Center, added to department group, MFA enrolled at first sign-in.
-- **Transfer:** remove from old department groups **first**, then add to new ones. Never leave both.
+- **Transfer:** update the user's `department` tag **first**, because data access follows the tag, not the group. Then remove the old department groups and add the new ones. The tag change alone removes access to the old department's data at the user's next session, even if the group changes are delayed. Never rely on group changes alone.
 - **Termination:** disable immediately, remove group memberships, delete after the retention period.
 - **Contractor:** access end date set at creation; reviewed 7 days before expiry.
 - **Access review:** managers confirm group membership quarterly.
