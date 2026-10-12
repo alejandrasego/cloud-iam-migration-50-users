@@ -22,6 +22,7 @@
 -  Session revocation (`revoke-sessions.json`) covers temporary credentials only. Long-term IAM access keys must be deactivated separately at termination.
 - The users of the shared front desk account are not identified in the inventory, so named replacement accounts cannot yet be created for them.
 - Scenarios 9 and 10 are walkthroughs and inventory checks. They verify the plan and the policy logic, not live account disabling, deletion, or log attribution.
+- The backup role's trust policy was reviewed by inspection, not simulated, because the policy simulator evaluates identity permissions only. That no human can assume the role rests on the trust policy naming only the backup service plus a human's own policy granting no assume-role.
 
 ## Next improvements
 (Fill in at the end. Candidates: SCP for Identity Center assignments, SCIM provisioning from an HR system, quarterly access recertification, SIEM alerting on IAM changes, allow-list boundary design.)
