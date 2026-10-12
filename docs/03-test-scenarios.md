@@ -14,7 +14,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | # | Scenario | User(s) | Method | Result |
 |---|---|---|---|---|
 | 1 | Standard new hire, Finance | asmith | Custom policy simulation | Pass |
-| 2 | HR hire with and without sensitive records access | nfoster, oadams | Simulator | |
+| 2 | HR hire with and without sensitive records access | nfoster, oadams | Custom policy simulation | Pass |
 | 3 | New IT admin and self-escalation attempt | sgarcia, sgarcia-admin | Custom policy simulation | Pass (1 limitation confirmed) |
 **Totals:** 4 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 6 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 | 5 | Department transfer (Sales to Finance) | tbrooks | Walkthrough + Simulator | |
@@ -24,7 +24,7 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 | 9 | Terminated employee and orphaned account | rdiaz, ibutler | Walkthrough | |
 | 10 | Shared account retirement | shared-frontdesk | Walkthrough | |
 
-**Totals:** 5 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 5 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
+**Totals:** 6 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 4 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
@@ -52,8 +52,22 @@ MFA enforcement is not part of this policy and is tested in scenario 6.
 - `nfoster`: access to HR records bucket allowed
 - `oadams`: access to HR records bucket denied; general HR department data allowed
 
-**Actual:**
-**Result:** ☐ Pass ☐ Fail
+**Actual:** `nfoster` is modeled with `mfa-enforcement.json` + `dept-readwrite.json` + `hr-records.json`; `oadams` with the first two only (group membership is modeled by policy attachment). Both tagged `department=HR`, MFA present unless stated.
+
+`nfoster` (in the records group):
+- Read HR/restricted object: allowed
+- Write HR/restricted object: allowed
+- Read Finance/restricted object: implicitDeny
+- Read HR/restricted without MFA: explicitDeny
+
+`oadams` (not in the records group):
+- Read HR/restricted object: implicitDeny
+- Read HR/standard object: allowed (general HR work unaffected)
+- Write HR/restricted object: implicitDeny
+
+Misconfiguration check: a user tagged `department=Finance` with the HR records policy wrongly attached, reading HR/restricted: implicitDeny (the policy also requires `department=HR` on the user).
+
+**Result:** ☒ Pass ☐ Fail
 
 ## Scenario 3: New IT admin and self-escalation attempt
 **Users:** `sgarcia` (daily identity) and `sgarcia-admin` (admin identity)
