@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowReadBackupSource",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::example-backup-source",
+        "arn:aws:s3:::example-backup-source/*"
+      ]
+    },
+    {
+      "Sid": "AllowWriteBackupDestination",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::example-backup-destination",
+        "arn:aws:s3:::example-backup-destination/*"
+      ]
+    },
+    {
+      "Sid": "DenyIdentityActions",
+      "Effect": "Deny",
+      "Action": [
+        "iam:*",
+        "sso:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
