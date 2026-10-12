@@ -130,3 +130,44 @@ The dates in both expiry files were also checked against the inventory CSV and m
 
 ### Residual risk
 Per-contractor hardcoded dates are error-prone, as this change shows. Generating expiry policies from the inventory, or adding a check that compares them to `contract_end`, would remove this class of mistake.
+
+---
+
+## Change 4: Transfer procedure left old-department access in place (design/procedure change)
+
+**Found in:** Scenario 5 (department transfer)
+**Date:** 2026-10-12
+**Files changed:** `config/groups-and-roles.md` (section 6). No policy JSON changed.
+**Risk register:** R12
+
+### What failed
+When a transfer changed the user's groups but not their `department` tag, the user kept reading their old department's data.
+
+| Case | Situation | Expected | Result |
+|---|---|---|---|
+| A1 / A2 | Before transfer (tag Sales) | allowed / implicitDeny | as expected |
+| B1 / B2 | Clean transfer (tag Finance) | allowed / implicitDeny | as expected |
+| C1 | Group changed, tag still Sales: new Finance data | implicitDeny | implicitDeny |
+| **C2** | **Group changed, tag still Sales: old Sales data** | **deny** | **allowed (FAIL)** |
+| D1 | Tag changed, old group left: old Sales data | implicitDeny | implicitDeny |
+| E1 | Tag changed, stale HR-records group left: HR restricted data | implicitDeny | implicitDeny |
+
+### Why it was a problem
+Department data access is driven by the `department` tag. The department groups all map to the same permission set, so group changes do not affect it. The documented procedure (remove old groups first, then add new ones) put the wrong control first. A transfer that stopped after the group steps left the old tag, and with it the old access.
+
+### Change made
+Transfer procedure now starts with the tag:
+
+```diff
+-- **Transfer:** remove from old department groups **first**, then add to new ones. Never leave both.
++- **Transfer:** update the user's `department` tag **first**, because data access follows the tag, not the group. Then remove the old department groups and add the new ones. Never rely on group changes alone.
+```
+
+### Verification
+With the tag changed first, no intermediate state leaves old access: D1 shows old Sales data is denied once the tag is Finance, even with the old group still in place, and E1 shows a stale HR-records group grants nothing after the tag changes. These are the results of the original run, which already covered the corrected order; no policy was altered.
+
+### Residual risk
+- The procedure depends on a person following it. A periodic check comparing each user's tag to their groups would catch missed steps (not implemented).
+- Tag edits are powerful: anyone who can edit a user's `department` tag can change that user's data access. Tag edits are denied to the help desk and should be limited to identity admins.
+- A changed tag takes effect when the user's next session starts, so access can persist until an existing session expires (not tested).
+- In production, the department should come from the identity source (directory or HR) as an Identity Center attribute, so a single record drives both tag and groups.
