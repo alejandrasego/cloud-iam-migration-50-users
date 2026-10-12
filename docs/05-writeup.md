@@ -19,6 +19,9 @@
 - The test account is on the AWS free plan, where IAM user groups are unavailable. Test policies were attached directly to test users instead of through groups.
 - Lab work was performed from the account owner's sign-in. A production deployment would use a separate named admin identity.
 - Testing used policy-level simulation (`simulate-custom-policy`) with simulated tag values, not live users and resources, because account-level guardrails blocked S3 and the free plan restricted other features. Results verify policy logic, not end-to-end behavior.
+-  Session revocation (`revoke-sessions.json`) covers temporary credentials only. Long-term IAM access keys must be deactivated separately at termination.
+- The users of the shared front desk account are not identified in the inventory, so named replacement accounts cannot yet be created for them.
+- Scenarios 9 and 10 are walkthroughs and inventory checks. They verify the plan and the policy logic, not live account disabling, deletion, or log attribution.
 
 ## Next improvements
 (Fill in at the end. Candidates: SCP for Identity Center assignments, SCIM provisioning from an HR system, quarterly access recertification, SIEM alerting on IAM changes, allow-list boundary design.)
