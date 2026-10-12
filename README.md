@@ -32,6 +32,7 @@ Two policies that each passed testing alone **failed together**: the permission 
 | [`config/policies/`](config/policies/) | The IAM policies (JSON) |
 | [`config/user-group-mapping.csv`](config/user-group-mapping.csv) | How each of the 50 accounts is handled |
 | [`data/users-sample.csv`](data/users-sample.csv) | The fictional inventory |
+| [`docs/06-test-commands.md`](docs/06-test-commands.md) | The exact commands and raw output for every scenario |
 
 ## How it was tested
 Policies were evaluated with the AWS CLI's `simulate-custom-policy` in CloudShell, using simulated tag and MFA values. The account-level simulator was unusable: for the S3 actions tested it returned `explicitDeny` with no matching policy statement and `AllowedByOrganizations: false`, which points to an account-level restriction rather than a flaw in the policies (the write-up explains how that was identified). Scenario 9 combines a policy test with an inventory check, scenario 10 is an inventory check, and scenario 7's trust policy was reviewed by inspection rather than simulated.**
