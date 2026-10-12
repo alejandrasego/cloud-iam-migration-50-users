@@ -19,12 +19,11 @@ Ten scenarios covering the account types and risks identified in [`01-migration-
 **Totals:** 4 passed (scenarios 4 and 8 after fixes), 0 failing, 2 failed initially and fixed (scenarios 4 and 8), 6 not yet run. See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
 | 5 | Department transfer (Sales to Finance) | tbrooks | Custom policy simulation | Pass (after procedure fix) |
 | 6 | User who has not enrolled MFA | lbaker | Custom policy simulation | Pass |
-| 7 | Service account converted to role | svc-backup | Simulator | |
-| 8 | Help desk password reset: regular vs. admin | ulee | Custom policy simulation | Pass (after fix) |
+| 7 | Service account converted to role | svc-backup | Custom policy simulation + trust policy review | Pass || 8 | Help desk password reset: regular vs. admin | ulee | Custom policy simulation | Pass (after fix) |
 | 9 | Terminated employee and orphaned account | rdiaz, ibutler | Policy test + inventory walkthrough | Pass |
 | 10 | Shared account retirement | shared-frontdesk | Inventory walkthrough | Pass (1 open item) |
 
-**Totals:** 9 passed (scenarios 4, 5 and 8 after fixes), 0 failing, 3 failed initially and fixed (scenarios 4, 5 and 8), 1 not yet run (scenario 7). See [`04-policy-change-log.md`](04-policy-change-log.md) for policy changes.
+**Totals:** 10 of 10 scenarios passed (scenarios 4, 5 and 8 after fixes). 3 failed initially and were fixed (scenarios 4, 5 and 8); 0 failing. See [`04-policy-change-log.md`](04-policy-change-log.md) for the 4 changes.
 ---
 
 ## Scenario 1: Standard new hire, Finance
@@ -187,8 +186,27 @@ With MFA (`aws:MultiFactorAuthPresent=true`):
 - `iam:CreateAccessKey` and `iam:PassRole` to non-approved roles: denied
 - Broad rights from the old Backup Operators group: no longer present
 
-**Actual:**
-**Result:** ☐ Pass ☐ Fail
+**Actual:** `role-backup-service.json` + `permission-boundary.json` for `role-backup-service`; trust policy reviewed by inspection.
+
+Role permissions:
+- Read backup source: allowed
+- Write backup destination: allowed
+- Write backup source: implicitDeny
+- Delete a backup: implicitDeny
+- Read an unrelated bucket: implicitDeny
+- `iam:CreateAccessKey`, `iam:PassRole` to a non-approved role, `iam:AttachRolePolicy`: explicitDeny
+
+Human access:
+- `sgarcia-admin` (sysadmin policy + boundary) assuming the role: implicitDeny (the human's own policy grants no assume-role)
+- Trust policy principals: only `backup.amazonaws.com`; 0 non-service principals; restricted to the account via `aws:SourceAccount`
+
+Scoped permissions:
+- Wildcard Allow actions in the role policy: none
+- Mapping: `svc-backup` -> `role-backup-service`, action `convert_to_role`
+
+**Not tested:** the trust policy was reviewed by inspection, not simulated; interactive login is not possible for roles by design (no password), not a tested result; S3 buckets stand in for the real backup source and destination; the old Backup Operators rights have no direct AWS equivalent, so the comparison is scoped permissions replacing broad rights.
+
+**Result:** ☒ Pass ☐ Fail
 
 ## Scenario 8: Help desk password reset: regular vs. admin
 **User:** `ulee` (grp-it-helpdesk)
