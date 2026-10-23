@@ -4,7 +4,7 @@ A migration plan, configuration, and test record for moving 50 local user accoun
 
 This is a design, configuration, and policy-testing project; nothing here is deployed to a live environment.
 
-**Author:** Alejandra Segoviano | **Role targeted:** IT Project Administrator
+**Author:** Alejandra Segoviano | **Role targeted:** Identity & Access Management, Cloud Identity Administration
 
 ## Results at a glance
 
